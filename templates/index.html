@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">GPX Stats</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="container">
+        <div class="container py-3 text-center">
+            <h3>Choose a .gpx file:</h3>
+        </div>
+        <div class="container">
+             <input class="form-control form-control-lg" id="formFile" type="file">
+        </div>
+     </div>
+
+
+    <div class="container" id="upload-container">
+        <form class="row" method="POST" enctype="multipart/form-data" id="fileUploadForm" name="upload_form" action="/upload">
+            <div class="custom-file col-4">
+                <input id="file" name="file" type="file" class="custom-file-input">
+
+                <label for="file" class="custom-file-label">
+                    <b>Choose File</b>
+                </label>
+            </div>
+            <div class="col-2">
+                <button class="btn btn-primary" type="submit" name="action">upload</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        $('#file').change(function() {
+          $(this).next('label').text($(this).val().replace(/C:\\fakepath\\/i, ''));
+        })
+    </script>
+
+{% endblock %}

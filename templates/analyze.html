@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container h-100 w-50">
+    <canvas id="myChart" width="400" height="400"></canvas>
+</div>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script>
+    console.log({{labels}});
+    updatePlot({{labels}}, {{data}});
+</script>
+{% endblock %}

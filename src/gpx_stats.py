@@ -1,7 +1,15 @@
 from datetime import datetime
+from pathlib import Path
+import json
 
 import gpxpy
 from geopy.distance import geodesic
+
+HERE = Path(__file__).parents[1]
+IN_DIR = HERE / 'input'
+OUT_DIR = HERE / 'output'
+OUT_DIR.mkdir(exist_ok=True)
+
 
 def extract_points(file):
     with open(file, 'r') as gpx_file:
@@ -15,6 +23,7 @@ def extract_points(file):
                 points.append(point)
 
     return points
+
 
 def calculate_elevation_change(points):
     current_altitude = points[0].elevation
@@ -31,15 +40,26 @@ def calculate_elevation_change(points):
 
     return round(ascent), round(descent)
 
+
+def average_hr(points):
+    hr = []
+    for point in points:
+        for extension_element in point.extensions[0].iter():
+            if extension_element.tag.endswith('hr'):
+                hr.append(int(extension_element.text))
+    return sum(hr) / len(hr)
+
+
 def calculate_distance(points):
     current_point = points[0]
-    distance=0
+    distance = 0
 
     for next_point in points[1:]:
         distance += distance_between_points(current_point, next_point)
         current_point = next_point
 
     return distance
+
 
 def distance_between_points(point1, point2):
     p1 = (point1.latitude, point1.longitude)
@@ -85,6 +105,7 @@ def create_custom_point(point_1, point_2, percent_of_distance=0.5):
     time = point_1.time + time_delta * percent_of_distance
 
     new_point = gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation=elevation, time=time)
+    new_point.extensions = point_2.extensions
     return new_point
 
 
@@ -94,6 +115,7 @@ def find_interpolation_point_by_time(point_1, point_2, segment_time, total_time)
 
     new_point = create_custom_point(point_1, point_2, percent_of_distance)
     return new_point
+
 
 def find_interpolation_point(point_1, point_2, segment_distance, total_distance):
     point_distance = distance_between_points(point_1, point_2)
@@ -177,7 +199,6 @@ def get_points_by_segment_time(points, segment_time):
     return segments
 
 
-
 def get_points_by_segment_distance(points, segment_distance):
     segments = []
     current_segment_points = []
@@ -214,11 +235,13 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     distance = calculate_distance(points)
     ascent, descent = calculate_elevation_change(points)
     duration = time_for_segment(points)
+    hr = average_hr(points)
 
     json['stats']['distance'] = distance
     json['stats']['ascent'] = ascent
     json['stats']['descent'] = descent
     json['stats']['duration'] = duration
+    json['stats']['hr'] = hr
     json['stats']['gap'] = calculate_gap(ascent, distance, duration)
     json['stats']['performance'] = round(((distance/10) + ascent) / duration * 3600)
 
@@ -228,18 +251,22 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
         segments = get_points_by_segment_time(points, segment_time)
 
     for nr, segment in enumerate(segments):
+        print(segment[0])
         distance = calculate_distance(segment)
         ascent, descent = calculate_elevation_change(segment)
         duration = time_for_segment(segment)
-        performance = round(((distance/10) + ascent) / duration * 3600)
+        hr = average_hr(segment)
+        if duration != 0:
+            performance = round(((distance/10) + ascent) / duration * 3600)
 
-        json['segments'].append({'nr': nr,
-                                 'distance': distance,
-                                 'ascent': ascent,
-                                 'descent': descent,
-                                 'duration': duration,
-                                 'gap': calculate_gap(ascent, distance, duration),
-                                 'performance': performance})
+            json['segments'].append({'nr': nr,
+                                     'distance': distance,
+                                     'ascent': ascent,
+                                     'descent': descent,
+                                     'duration': duration,
+                                     'hr': hr,
+                                     'gap': calculate_gap(ascent, distance, duration),
+                                     'performance': performance})
 
     distance = 0
     point1 = points[0]
@@ -266,8 +293,6 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     return json
 
 
-
-
 def print_segment_analysis(points, segment_size):
     segments = get_points_by_segment_distance(points, segment_size)
     for nr, segment in enumerate(segments):
@@ -277,11 +302,12 @@ def print_segment_analysis(points, segment_size):
         steepness = round(steepness, 1)
         print(f'KM {nr+1}: {len(segment)} points, {distance} meters, {ascent} up, {descent} down, {steepness} elevation change')
 
-fn = 'Morning_Run_Interval_5_3_2'
-my_points = extract_points(f'{fn}.gpx')
-out = create_geojson('test', my_points, segment_time = 60)
-import json
-with open(f'output_{fn}.geojson', 'w') as file:
-    file.write(json.dumps(out['geojson']))
-with open(f'out_{fn}.json', 'w') as file:
-    file.write(json.dumps(out))
+
+def process_file(fn, segment_time):
+    my_points = extract_points(IN_DIR / f'{fn}.gpx')
+    out = create_geojson('test', my_points, segment_time=segment_time)
+    with open(OUT_DIR / f'output_{fn}.geojson', 'w') as file:
+        file.write(json.dumps(out['geojson']))
+    with open(OUT_DIR / f'out_{fn}.json', 'w') as file:
+        file.write(json.dumps(out))
+    return out
