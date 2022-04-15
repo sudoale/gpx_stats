@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <canvas id="distance_chart"></canvas>
+    </div>
+    <div class="col">
+      <canvas id="steepness_chart"></canvas>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <canvas id="ascent_chart"></canvas>
+    </div>
+    <div class="col">
+      <canvas id="descent_chart"></canvas>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script>
+    updatePlot({{data['labels']}}, {{data['distances']}}, "distance_chart", "Distance");
+    updatePlot({{data['labels']}}, {{data['steepnesses']}}, 'steepness_chart', 'Steepness');
+    updatePlot({{data['labels']}}, {{data['ascents']}}, 'ascent_chart', 'Ascent');
+    updatePlot({{data['labels']}}, {{data['descents']}}, 'descent_chart', 'Descent');
+</script>
+{% endblock %}

@@ -1,43 +1,57 @@
 {% extends "base.html" %}
-
+{% block imports %}
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
+{% endblock %}
 
 {% block content %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">GPX Stats</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Analyze Performance
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <form action="/upload_file" class="dropzone" id="my-element"></form>
       </div>
-    </nav>
-    <div class="container">
-        <div class="container py-3 text-center">
-            <h3>Choose a .gpx file:</h3>
-        </div>
-        <div class="container">
-             <input class="form-control form-control-lg" id="formFile" type="file">
-        </div>
-     </div>
-
-
-    <div class="container" id="upload-container">
-        <form class="row" method="POST" enctype="multipart/form-data" id="fileUploadForm" name="upload_form" action="/upload">
-            <div class="custom-file col-4">
-                <input id="file" name="file" type="file" class="custom-file-input">
-
-                <label for="file" class="custom-file-label">
-                    <b>Choose File</b>
-                </label>
-            </div>
-            <div class="col-2">
-                <button class="btn btn-primary" type="submit" name="action">upload</button>
-            </div>
-        </form>
     </div>
-    <script>
-        $('#file').change(function() {
-          $(this).next('label').text($(this).val().replace(/C:\\fakepath\\/i, ''));
-        })
-    </script>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Analyze Course Profile
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+</div>
 
+
+
+
+
+<script>
+  Dropzone.options.myElement = {
+  // Note: using "function()" here to bind `this` to
+  // the Dropzone instance.
+  init: function() {
+    this.on("addedfile", file => {
+      console.log("A file has been added");
+    });
+    this.on("success", (file, response) => {
+      alert("File upload successful.");
+      window.location.replace(response);
+    });
+    this.on("error", (file, response) => {
+        alert(response);
+    });
+  }
+};
+</script>
 {% endblock %}

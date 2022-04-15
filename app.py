@@ -1,14 +1,25 @@
 from pathlib import Path
 from flask import (Flask,
                    render_template,
-                   request,
-                   redirect)
+                   request)
 
 from werkzeug.utils import secure_filename
 
-from src.gpx_stats import process_file
+from src.gpx_stats import (process_performance_file,
+                           process_course_file)
+
+UPLOAD_FOLDER = Path(__file__).parent / 'input'
+ALLOWED_EXTENSIONS = {'gpx'}
+
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def get_file_extension(filename):
+    if not (fn_parts := filename.split('.')):
+        return None, None
+    return fn_parts[0].lower(), fn_parts[1].lower()
 
 
 @app.route('/', methods=['GET'])
@@ -16,31 +27,38 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/analyze', methods=['GET'])
-def analyze():
+@app.route('/analyze/performance', methods=['GET'])
+def analyze_performance():
     fn = request.args.get('f')
     segment_time = int(request.args.get('t', '60'))
-    data = process_file(fn, segment_time)
+    data = process_performance_file(fn, segment_time)
     segments = data['segments']
     labels = []
     performance = []
     for item in segments:
         labels.append(item['nr'])
         performance.append(item['performance'])
-    return render_template('analyze.html', labels=labels, data=performance)
+    return render_template('analyze_performance.html', labels=labels, data=performance)
 
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if request.method == 'POST':
+@app.route('/analyze/course', methods=['GET'])
+def analyze_course():
+    fn = request.args.get('f')
+    data = process_course_file(fn)
+    return render_template('analyze_course.html', data=data)
 
-        if 'file' not in request.files:  # check if the post request has the file part
-            return redirect(request.url)
-        file = request.files['file']
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    file = request.files['file']
+    file_prefix, file_extenstion = get_file_extension(file.filename)
+    if file_extenstion in ALLOWED_EXTENSIONS:
         filename = secure_filename(file.filename)
-        if filename.endswith('gpx'):
-            file.save(Path(__file__).parent / 'input' / filename)
-            return render_template('analyze.html')
+        file.save(UPLOAD_FOLDER / filename)
+        return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
+    return f".{file_extenstion} files not supported. Please try again.", 400
+
+
 
 
 if __name__ == '__main__':

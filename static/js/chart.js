@@ -1,21 +1,11 @@
-const fileReader = document.getElementById('formFile');
-
-fileReader.addEventListener('change', (event) => {
-  console.log(event.target.files[0]);
-
-  console.log('I got clicked');
-});
-
-
-
-function updatePlot(labels, data){
-    const ctx = document.getElementById('myChart').getContext('2d');
+function updatePlot(labels, data, id, title){
+    const ctx = document.getElementById(id).getContext('2d');
     const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: '#Performance',
+                label: title,
                 data: data,
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.2)',
