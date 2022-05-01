@@ -5,53 +5,66 @@
 {% endblock %}
 
 {% block content %}
-<div class="accordion" id="accordionExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        Analyze Performance
-      </button>
-    </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <form action="/upload_file" class="dropzone" id="my-element"></form>
+<div class="container">
+  <h1 class="text-center">Welcome to GPX Stats</h1>
+  <p class="text-center">Start by uploading a past performance or a planned course.</p>
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Analyze Performance
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <form action="/upload_performance_file" class="dropzone" id="performance"></form>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingTwo">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        Analyze Course Profile
-      </button>
-    </h2>
-    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Analyze Course Profile
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <form action="/upload_course_file" class="dropzone" id="course"></form>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-
-
-
-
 <script>
-  Dropzone.options.myElement = {
-  // Note: using "function()" here to bind `this` to
-  // the Dropzone instance.
-  init: function() {
-    this.on("addedfile", file => {
-      console.log("A file has been added");
-    });
-    this.on("success", (file, response) => {
-      alert("File upload successful.");
-      window.location.replace(response);
-    });
-    this.on("error", (file, response) => {
-        alert(response);
-    });
-  }
-};
+  Dropzone.options.performance = {
+    init: function() {
+      this.on("addedfile", file => {
+        console.log("A file has been added");
+      });
+      this.on("success", (file, response) => {
+        alert("File upload successful.");
+        window.location.replace(response);
+      });
+      this.on("error", (file, response) => {
+          alert(response);
+      });
+    }
+  };
+
+  Dropzone.options.course = {
+    init: function() {
+      this.on("addedfile", file => {
+        console.log("A file has been added");
+      });
+      this.on("success", (file, response) => {
+        alert("File upload successful.");
+        window.location.replace(response);
+      });
+      this.on("error", (file, response) => {
+          alert(response);
+      });
+    }
+  };
 </script>
 {% endblock %}
