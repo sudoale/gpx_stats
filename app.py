@@ -22,6 +22,18 @@ def get_file_extension(filename):
     return fn_parts[0].lower(), fn_parts[1].lower()
 
 
+def process_file_upload(file, file_type):
+    file_prefix, file_extenstion = get_file_extension(file.filename)
+    if file_extenstion in ALLOWED_EXTENSIONS:
+        filename = secure_filename(file.filename)
+        file.save(UPLOAD_FOLDER / filename)
+        if file_type == 'performance':
+            return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
+        elif file_type == 'course':
+            return f"http://localhost:5000/analyze/course?f={file_prefix}", 200
+    return f".{file_extenstion} files not supported. Please try again.", 400
+
+
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
@@ -32,13 +44,7 @@ def analyze_performance():
     fn = request.args.get('f')
     segment_time = int(request.args.get('t', '60'))
     data = process_performance_file(fn, segment_time)
-    segments = data['segments']
-    labels = []
-    performance = []
-    for item in segments:
-        labels.append(item['nr'])
-        performance.append(item['performance'])
-    return render_template('analyze_performance.html', labels=labels, data=performance)
+    return render_template('analyze_performance.html', data=data)
 
 
 @app.route('/analyze/course', methods=['GET'])
@@ -48,18 +54,17 @@ def analyze_course():
     return render_template('analyze_course.html', data=data)
 
 
-@app.route('/upload_file', methods=['POST'])
-def upload_file():
+@app.route('/upload_performance_file', methods=['POST'])
+def upload_performance_file():
     file = request.files['file']
-    file_prefix, file_extenstion = get_file_extension(file.filename)
-    if file_extenstion in ALLOWED_EXTENSIONS:
-        filename = secure_filename(file.filename)
-        file.save(UPLOAD_FOLDER / filename)
-        return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
-    return f".{file_extenstion} files not supported. Please try again.", 400
+    return process_file_upload(file, 'performance')
 
 
+@app.route('/upload_course_file', methods=['POST'])
+def upload_course_file():
+    file = request.files['file']
+    return process_file_upload(file, 'course')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
