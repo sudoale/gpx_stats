@@ -114,6 +114,7 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     json['stats']['hr'] = hr
     json['stats']['gap'] = calculate_gap(ascent, distance, duration)
     json['stats']['performance'] = round(((distance/10) + ascent) / duration * 3600)
+    json['stats']['vam'] = ascent / descent * 3600
 
     if segment_distance:
         segments = get_points_by_segment_distance(points, segment_distance)
@@ -135,7 +136,10 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
                                      'duration': duration,
                                      'hr': hr,
                                      'gap': calculate_gap(ascent, distance, duration),
-                                     'performance': performance})
+                                     'performance': performance,
+                                     'vam': ascent / duration * 3600})
+    for k in json['segments'][0].keys():
+        json[k] = [entry[k] for entry in json['segments']]
 
     distance = 0
     point1 = points[0]
@@ -164,26 +168,19 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
 
 def analyze_course_profile(points, segment_size):
     segments = get_points_by_segment_distance(points, segment_size)
-    result = {'segments': [],
-              'distances': [],
-              'ascents': [],
-              'descents': [],
-              'steepnesses': [],
-              'labels': []}
+    result = {'segments': []}
     for nr, segment in enumerate(segments):
         distance = calculate_distance(segment)
         ascent, descent = calculate_elevation_change(segment)
         steepness = (ascent + descent) / distance * 100
         steepness = round(steepness, 1)
-        result['segments'].append({'distance': distance,
+        result['segments'].append({'label': nr+1,
+                                   'distance': distance,
                                    'ascent': ascent,
                                    'descent': descent,
                                    'steepness': steepness})
-        result['distances'].append(distance)
-        result['ascents'].append(ascent)
-        result['descents'].append(descent)
-        result['steepnesses'].append(steepness)
-        result['labels'].append(nr+1)
+    for k in result['segments'][0].keys():
+        result[k] = [entry[k] for entry in result['segments']]
     return result
 
 
