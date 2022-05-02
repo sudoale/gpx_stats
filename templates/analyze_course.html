@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="container">
+    <h1>Course Analysis</h1>
+    <h3 id="activityName">{{ activity_name }}</h3>
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col">
-      <canvas id="distance_chart"></canvas>
+      <canvas id="elevation_chart"></canvas>
     </div>
     <div class="col">
       <canvas id="steepness_chart"></canvas>
@@ -41,7 +47,7 @@
 </div>
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 <script>
-    updatePlot({{data['label']}}, {{data['distance']}}, "distance_chart", "Distance");
+    updatePlot({{data['elevation_label']}}, {{data['elevation']}}, "elevation_chart", "Elevation");
     updatePlot({{data['label']}}, {{data['steepness']}}, 'steepness_chart', 'Steepness');
     updatePlot({{data['label']}}, {{data['ascent']}}, 'ascent_chart', 'Ascent');
     updatePlot({{data['label']}}, {{data['descent']}}, 'descent_chart', 'Descent');

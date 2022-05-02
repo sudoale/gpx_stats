@@ -1,11 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container h-100 w-50">
-    <canvas id="performance_chart" width="400" height="400"></canvas>
+<div class="container">
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Settings
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <div class="col-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="radioSegmentType" id="radioDistance" value="distance" checked>
+                        <label class="form-check-label" for="radioDistance">Distance</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="radioSegmentType" id="radioTime" value="time">
+                        <label class="form-check-label" for="radioTime">Time</label>
+                    </div>
+                </div>
+                <div class="col-6 position-relative text-center">
+                    <output id="distanceSelected" class="mx-auto">400</output>
+                    <input type="range" class="form-range" min="100" max="2000" step="100" value=400 id="distanceRange" oninput="distanceSelected.value = this.value">
+                </div>
+                <div class="col-6 position-relative text-center">
+                    <output id="timeSelected" class="mx-auto">60</output>
+                    <input type="range" class="form-range" min="10" max="180" step="10" value=60 id="timeRange" oninput="timeSelected.value = this.value" disabled>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" onclick="recalculate()">Recalculate</button>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
 </div>
+
+<div class="container">
+    <h1>Performance Analysis</h1>
+    <h3 id="activityName">{{ activity_name }}</h3>
+    {% if segment_time %}
+        <h3>Segment Time: {{ segment_time }}</h3>
+    {% elif segment_distance %}
+        <h3>Segment Distance: {{ segment_distance }}</h3>
+    {% endif %}
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <canvas id="performance_chart"></canvas>
+    </div>
+    <div class="col">
+      <canvas id="vam_chart"></canvas>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<div class="container">
+  <table class="table table-dark table-striped">
+    <tr>
+        <th>Segment Number</th>
+        <th>Distance</th>
+        <th>Ascent</th>
+        <th>Descent</th>
+        <th>HR</th>
+        <th>GAP</th>
+        <th>Performance</th>
+        <th>VAM</th>
+      </tr>
+    {% for segment in data['segments'] %}
+      <tr>
+        <td>{{loop.index}}</td>
+        <td>{{segment['distance']}}</td>
+        <td>{{segment['ascent']}}</td>
+        <td>{{segment['descent']}}</td>
+        <td>{{segment['hr']}}</td>
+        <td>{{segment['gap']}}</td>
+        <td>{{segment['performance']}}</td>
+        <td>{{segment['vam']}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
 <script>
-    updatePlot({{labels}}, {{data}}, 'performance_chart', 'Performance');
+    updatePlot({{data['nr']}}, {{data['performance']}}, "performance_chart", "Performance");
+    updatePlot({{data['nr']}}, {{data['vam']}}, "vam_chart", "VAM");
 </script>
+<script src="{{ url_for('static', filename='js/performance.js') }}"></script>
 {% endblock %}

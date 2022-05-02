@@ -106,6 +106,7 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     ascent, descent = calculate_elevation_change(points)
     duration = time_for_segment(points)
     hr = average_hr(points)
+    elevation = [point.elevation for point in points]
 
     json['stats']['distance'] = distance
     json['stats']['ascent'] = ascent
@@ -115,6 +116,7 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     json['stats']['gap'] = calculate_gap(ascent, distance, duration)
     json['stats']['performance'] = round(((distance/10) + ascent) / duration * 3600)
     json['stats']['vam'] = ascent / descent * 3600
+    json['stats']['elevation'] = elevation
 
     if segment_distance:
         segments = get_points_by_segment_distance(points, segment_distance)
@@ -126,6 +128,7 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
         ascent, descent = calculate_elevation_change(segment)
         duration = time_for_segment(segment)
         hr = average_hr(segment)
+        elevation = [point.elevation for point in segment]
         if duration != 0:
             performance = round(((distance/10) + ascent) / duration * 3600)
 
@@ -137,7 +140,8 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
                                      'hr': hr,
                                      'gap': calculate_gap(ascent, distance, duration),
                                      'performance': performance,
-                                     'vam': ascent / duration * 3600})
+                                     'vam': ascent / duration * 3600,
+                                     'elevation': elevation})
     for k in json['segments'][0].keys():
         json[k] = [entry[k] for entry in json['segments']]
 
@@ -174,19 +178,35 @@ def analyze_course_profile(points, segment_size):
         ascent, descent = calculate_elevation_change(segment)
         steepness = (ascent + descent) / distance * 100
         steepness = round(steepness, 1)
+        elevation = [point.elevation for point in segment]
         result['segments'].append({'label': nr+1,
                                    'distance': distance,
                                    'ascent': ascent,
                                    'descent': descent,
-                                   'steepness': steepness})
+                                   'steepness': steepness,
+                                   'elevation': elevation})
+
     for k in result['segments'][0].keys():
-        result[k] = [entry[k] for entry in result['segments']]
+        if k == 'elevation':
+            result[k] = [elevation for entry in result['segments'] for elevation in entry[k]]
+            elevation_labels = []
+            for i, entry in enumerate(result['segments']):
+                for elevation in entry[k]:
+                    elevation_labels.append(i)
+            result['elevation_label'] = elevation_labels
+        else:
+            result[k] = [entry[k] for entry in result['segments']]
     return result
 
 
-def process_performance_file(fn, segment_time):
+def process_performance_file(fn, segment_time=None, segment_distance=None):
     my_points = extract_points(IN_DIR / f'{fn}.gpx')
-    out = create_geojson(fn, my_points, segment_time=segment_time)
+    if segment_time:
+        out = create_geojson(fn, my_points, segment_time=segment_time)
+    elif segment_distance:
+        out = create_geojson(fn, my_points, segment_distance=segment_distance)
+    else:
+        raise Exception("Invalid function call.")
     with open(OUT_DIR / f'output_performance_{fn}.geojson', 'w') as file:
         file.write(json.dumps(out['geojson']))
     with open(OUT_DIR / f'out_performance_{fn}.json', 'w') as file:

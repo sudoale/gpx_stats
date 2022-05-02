@@ -42,16 +42,27 @@ def home():
 @app.route('/analyze/performance', methods=['GET'])
 def analyze_performance():
     fn = request.args.get('f')
-    segment_time = int(request.args.get('t', '60'))
-    data = process_performance_file(fn, segment_time)
-    return render_template('analyze_performance.html', data=data)
+    segment_time = int(request.args.get('t', 0))
+    segment_distance = int(request.args.get('d', 0))
+    if segment_time:
+        data = process_performance_file(fn, segment_time=segment_time)
+        return render_template('analyze_performance.html',
+                               data=data,
+                               activity_name=fn,
+                               segment_time=segment_time)
+    elif segment_distance:
+        data = process_performance_file(fn, segment_distance=segment_distance)
+        return render_template('analyze_performance.html',
+                               data=data,
+                               activity_name=fn,
+                               segment_distance=segment_distance)
 
 
 @app.route('/analyze/course', methods=['GET'])
 def analyze_course():
     fn = request.args.get('f')
     data = process_course_file(fn)
-    return render_template('analyze_course.html', data=data)
+    return render_template('analyze_course.html', data=data, activity_name=fn)
 
 
 @app.route('/upload_performance_file', methods=['POST'])
