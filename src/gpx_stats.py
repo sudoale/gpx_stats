@@ -18,6 +18,8 @@ from src.gpx_adjustments import (find_interpolation_point_by_time,
 
 HERE = Path(__file__).parents[1]
 IN_DIR = HERE / 'input'
+COURSE_DIR = IN_DIR / 'course'
+PERFORMANCE_DIR = IN_DIR / 'performance'
 OUT_DIR = HERE / 'output'
 OUT_DIR.mkdir(exist_ok=True)
 
@@ -200,7 +202,7 @@ def analyze_course_profile(points, segment_size):
 
 
 def process_performance_file(fn, segment_time=None, segment_distance=None):
-    my_points = extract_points(IN_DIR / f'{fn}.gpx')
+    my_points = extract_points(PERFORMANCE_DIR / f'{fn}.gpx')
     if segment_time:
         out = create_geojson(fn, my_points, segment_time=segment_time)
     elif segment_distance:
@@ -215,7 +217,7 @@ def process_performance_file(fn, segment_time=None, segment_distance=None):
 
 
 def process_course_file(fn, distance=1000):
-    my_points = extract_points(IN_DIR / f'{fn}.gpx')
+    my_points = extract_points(COURSE_DIR / f'{fn}.gpx')
     out = analyze_course_profile(my_points, distance)
     with open(OUT_DIR / f'out_profile_{fn}.json', 'w') as file:
         file.write(json.dumps(out))

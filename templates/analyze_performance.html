@@ -2,6 +2,16 @@
 
 {% block content %}
 <div class="container">
+    <h1>Performance Analysis</h1>
+    <h3 id="activityName">{{ activity_name }}</h3>
+    {% if segment_time %}
+        <h3>Segment Time: {{ segment_time }}</h3>
+    {% elif segment_distance %}
+        <h3>Segment Distance: {{ segment_distance }}</h3>
+    {% endif %}
+</div>
+
+<div class="container">
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
@@ -36,16 +46,6 @@
           </div>
         </div>
     </div>
-</div>
-
-<div class="container">
-    <h1>Performance Analysis</h1>
-    <h3 id="activityName">{{ activity_name }}</h3>
-    {% if segment_time %}
-        <h3>Segment Time: {{ segment_time }}</h3>
-    {% elif segment_distance %}
-        <h3>Segment Distance: {{ segment_distance }}</h3>
-    {% endif %}
 </div>
 
 <div class="container">

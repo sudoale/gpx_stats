@@ -7,13 +7,18 @@ from werkzeug.utils import secure_filename
 
 from src.gpx_stats import (process_performance_file,
                            process_course_file)
+from src.helpers import get_files_of_format
 
 UPLOAD_FOLDER = Path(__file__).parent / 'input'
+COURSE_UPLOAD_FOLDER = UPLOAD_FOLDER / 'course'
+COURSE_UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
+PERFORMANCE_UPLOAD_FOLDER = UPLOAD_FOLDER / 'performance'
+PERFORMANCE_UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {'gpx'}
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 def get_file_extension(filename):
@@ -26,10 +31,11 @@ def process_file_upload(file, file_type):
     file_prefix, file_extenstion = get_file_extension(file.filename)
     if file_extenstion in ALLOWED_EXTENSIONS:
         filename = secure_filename(file.filename)
-        file.save(UPLOAD_FOLDER / filename)
         if file_type == 'performance':
+            file.save(PERFORMANCE_UPLOAD_FOLDER / filename)
             return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
         elif file_type == 'course':
+            file.save(COURSE_UPLOAD_FOLDER / filename)
             return f"http://localhost:5000/analyze/course?f={file_prefix}", 200
     return f".{file_extenstion} files not supported. Please try again.", 400
 
@@ -41,12 +47,14 @@ def home():
 
 @app.route('/course', methods=['GET'])
 def course():
-    return render_template('course.html', location='course')
+    course_files = get_files_of_format(COURSE_UPLOAD_FOLDER, 'gpx')
+    return render_template('course.html', location='course', files=course_files)
 
 
 @app.route('/performance', methods=['GET'])
 def performance():
-    return render_template('performance.html', location='performance')
+    performance_files = get_files_of_format(PERFORMANCE_UPLOAD_FOLDER, 'gpx')
+    return render_template('performance.html', location='performance', files=performance_files)
 
 
 @app.route('/analyze/performance', methods=['GET'])
