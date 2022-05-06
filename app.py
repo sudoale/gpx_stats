@@ -36,7 +36,17 @@ def process_file_upload(file, file_type):
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html')
+    return render_template('index.html', location='home')
+
+
+@app.route('/course', methods=['GET'])
+def course():
+    return render_template('course.html', location='course')
+
+
+@app.route('/performance', methods=['GET'])
+def performance():
+    return render_template('performance.html', location='performance')
 
 
 @app.route('/analyze/performance', methods=['GET'])
