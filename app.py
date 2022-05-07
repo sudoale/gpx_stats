@@ -48,13 +48,17 @@ def home():
 @app.route('/course', methods=['GET'])
 def course():
     course_files = get_files_of_format(COURSE_UPLOAD_FOLDER, 'gpx')
-    return render_template('course.html', location='course', files=course_files)
+    return render_template('course.html',
+                           location='course',
+                           files=course_files)
 
 
 @app.route('/performance', methods=['GET'])
 def performance():
     performance_files = get_files_of_format(PERFORMANCE_UPLOAD_FOLDER, 'gpx')
-    return render_template('performance.html', location='performance', files=performance_files)
+    return render_template('performance.html',
+                           location='performance',
+                           files=performance_files)
 
 
 @app.route('/analyze/performance', methods=['GET'])

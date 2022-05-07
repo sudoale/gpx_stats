@@ -3,8 +3,14 @@
 {% block content %}
 
 <div class="container">
-    <h1>Course Analysis</h1>
-    <h3 id="activityName">{{ activity_name }}</h3>
+    <h1 class="text-primary py-3">Course Analysis</h1>
+
+    <table class="table table-bordered py-3 w-50">
+    <tr>
+        <th class="table-primary">Course Name</th>
+        <td>{{ activity_name }}</td>
+      </tr>
+  </table>
 </div>
 
 <div class="container">
@@ -28,8 +34,8 @@
   </div>
 </div>
 <div class="container">
-  <table class="table table-dark table-striped">
-    <tr>
+  <table class="table">
+    <tr class=" table-primary">
         <th>KM</th>
         <th>Ascent</th>
         <th>Descent</th>

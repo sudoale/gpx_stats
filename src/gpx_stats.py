@@ -116,8 +116,8 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
     json['stats']['duration'] = duration
     json['stats']['hr'] = hr
     json['stats']['gap'] = calculate_gap(ascent, distance, duration)
-    json['stats']['performance'] = round(((distance/10) + ascent) / duration * 3600)
-    json['stats']['vam'] = ascent / descent * 3600
+    json['stats']['performance'] = round(((distance/10) + ascent) / duration * 3600, 1)
+    json['stats']['vam'] = round(ascent / descent * 3600, 1)
     json['stats']['elevation'] = elevation
 
     if segment_distance:
@@ -142,7 +142,7 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
                                      'hr': hr,
                                      'gap': calculate_gap(ascent, distance, duration),
                                      'performance': performance,
-                                     'vam': ascent / duration * 3600,
+                                     'vam': round(ascent / duration * 3600),
                                      'elevation': elevation})
     for k in json['segments'][0].keys():
         json[k] = [entry[k] for entry in json['segments']]
@@ -178,8 +178,7 @@ def analyze_course_profile(points, segment_size):
     for nr, segment in enumerate(segments):
         distance = calculate_distance(segment)
         ascent, descent = calculate_elevation_change(segment)
-        steepness = (ascent + descent) / distance * 100
-        steepness = round(steepness, 1)
+        steepness = round((ascent + descent) / distance * 100, 1)
         elevation = [point.elevation for point in segment]
         result['segments'].append({'label': nr+1,
                                    'distance': distance,

@@ -3,16 +3,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container text-center py-5">
   <h1 class="text-center">Select your a course!</h1>
-  <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+  <div class="dropdown py-5">
+    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
       Select Course
     </a>
 
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <li><h6>Common courses</h6></li>
-      <li><h6>Your courses</h6></li>
       {% for file in files %}
         <li><a class="dropdown-item" href="/analyze/course?f={{file}}">{{ file }}</a></li>
       {% endfor %}

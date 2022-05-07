@@ -23,7 +23,7 @@ def average_hr(points):
         for extension_element in point.extensions[0].iter():
             if extension_element.tag.endswith('hr'):
                 hr.append(int(extension_element.text))
-    return sum(hr) / len(hr)
+    return round(sum(hr) / len(hr))
 
 
 def calculate_distance(points):
@@ -34,7 +34,7 @@ def calculate_distance(points):
         distance += distance_between_points(current_point, next_point)
         current_point = next_point
 
-    return distance
+    return round(distance)
 
 
 def distance_between_points(point1, point2):

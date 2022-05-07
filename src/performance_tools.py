@@ -21,4 +21,4 @@ def calculate_gap(ascent, distance, duration):
     if adjusted_ascent > 200:
         gap -= ((adjusted_ascent - 200) % 50) * 90
 
-    return gap - remaining_reduction
+    return round(gap - remaining_reduction)
