@@ -1,3 +1,6 @@
+import seaborn
+
+
 def calculate_gap(ascent, distance, duration):
     ratio = 1000 / distance
 
@@ -18,7 +21,7 @@ def calculate_gap(ascent, distance, duration):
     if adjusted_ascent > 150:
         gap -= 75
         remaining_reduction = remaining_ascent * 1.8
-    if adjusted_ascent > 200:
-        gap -= ((adjusted_ascent - 200) % 50) * 90
-
+    if adjusted_ascent >= 200:
+        gap -= 90
+        return round(gap * (0.995 ** (adjusted_ascent - 200)))
     return round(gap - remaining_reduction)
