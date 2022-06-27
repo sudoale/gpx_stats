@@ -87,6 +87,16 @@ def analyze_course():
     return render_template('analyze_course.html', data=data, activity_name=fn)
 
 
+@app.route('/plan/course', methods=['GET'])
+def plan_course():
+    course = request.args.get('c')
+    hours = request.args.get('h')
+    minutes = request.args('m')
+    total_minutes = (hours * 60) + minutes
+
+    data = process_course_file(course)
+
+
 @app.route('/upload_performance_file', methods=['POST'])
 def upload_performance_file():
     file = request.files['file']
@@ -99,5 +109,15 @@ def upload_course_file():
     return process_file_upload(file, 'course')
 
 
+@app.route('/plan', methods=['GET', 'POST'])
+def plan():
+    if request.method == 'POST':
+        pass
+    else:
+        course_files = get_files_of_format(COURSE_UPLOAD_FOLDER, 'gpx')
+        return render_template('plan_course.html',
+                                files=course_files)
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5500)

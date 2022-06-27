@@ -41,21 +41,21 @@
         <th>Descent</th>
         <th>Steepness</th>
       </tr>
-    {% for segment in data['segments'] %}
+    {% for segment in data.segments %}
       <tr>
         <td>{{loop.index}}</td>
-        <td>{{segment['ascent']}}</td>
-        <td>{{segment['descent']}}</td>
-        <td>{{segment['steepness']}}</td>
+        <td>{{segment.ascent}}</td>
+        <td>{{segment.descent}}</td>
+        <td>{{segment.steepness}}</td>
       </tr>
     {% endfor %}
   </table>
 </div>
 <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 <script>
-    updatePlot({{data['elevation_label']}}, {{data['elevation']}}, "elevation_chart", "Elevation");
-    updatePlot({{data['label']}}, {{data['steepness']}}, 'steepness_chart', 'Steepness');
-    updatePlot({{data['label']}}, {{data['ascent']}}, 'ascent_chart', 'Ascent');
-    updatePlot({{data['label']}}, {{data['descent']}}, 'descent_chart', 'Descent');
+    updatePlot({{data.elevation_labels}}, {{data.elevations}}, "elevation_chart", "Elevation");
+    updatePlot({{data.labels}}, {{data.steepnesses}}, 'steepness_chart', 'Steepness');
+    updatePlot({{data.labels}}, {{data.ascents}}, 'ascent_chart', 'Ascent');
+    updatePlot({{data.labels}}, {{data.descents}}, 'descent_chart', 'Descent');
 </script>
 {% endblock %}

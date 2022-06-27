@@ -15,6 +15,9 @@ from src.metrics import (calculate_elevation_change,
                          speed_between_points)
 from src.gpx_adjustments import (find_interpolation_point_by_time,
                                  find_interpolation_point)
+from src.models.course import Course
+from src.models.segment import Segment
+from src.models.encoder import CourseEncoder
 
 HERE = Path(__file__).parents[1]
 IN_DIR = HERE / 'input'
@@ -174,30 +177,15 @@ def create_geojson(name, points, segment_distance=None, segment_time=None):
 
 def analyze_course_profile(points, segment_size):
     segments = get_points_by_segment_distance(points, segment_size)
-    result = {'segments': []}
+    course = Course('test')
     for nr, segment in enumerate(segments):
         distance = calculate_distance(segment)
         ascent, descent = calculate_elevation_change(segment)
         steepness = round((ascent + descent) / distance * 100, 1)
         elevation = [point.elevation for point in segment]
-        result['segments'].append({'label': nr+1,
-                                   'distance': distance,
-                                   'ascent': ascent,
-                                   'descent': descent,
-                                   'steepness': steepness,
-                                   'elevation': elevation})
-
-    for k in result['segments'][0].keys():
-        if k == 'elevation':
-            result[k] = [elevation for entry in result['segments'] for elevation in entry[k]]
-            elevation_labels = []
-            for i, entry in enumerate(result['segments']):
-                for elevation in entry[k]:
-                    elevation_labels.append(i)
-            result['elevation_label'] = elevation_labels
-        else:
-            result[k] = [entry[k] for entry in result['segments']]
-    return result
+        segment = Segment(nr+1, distance, ascent, descent, steepness, elevation)
+        course.add_segment(segment)
+    return course
 
 
 def process_performance_file(fn, segment_time=None, segment_distance=None):
@@ -219,5 +207,9 @@ def process_course_file(fn, distance=1000):
     my_points = extract_points(COURSE_DIR / f'{fn}.gpx')
     out = analyze_course_profile(my_points, distance)
     with open(OUT_DIR / f'out_profile_{fn}.json', 'w') as file:
-        file.write(json.dumps(out))
+        file.write(json.dumps(out, cls=CourseEncoder))
     return out
+
+
+def plan_course(data, minutes):
+    pass
