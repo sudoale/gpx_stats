@@ -27,8 +27,8 @@ OUT_DIR = HERE / 'output'
 OUT_DIR.mkdir(exist_ok=True)
 
 
-def extract_points(file):
-    with open(file, 'r') as gpx_file:
+def extract_points(file: Path):
+    with open(file.absolute(), 'r') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
     points = []
@@ -211,5 +211,6 @@ def process_course_file(fn, distance=1000):
     return out
 
 
-def plan_course(data, minutes):
+def plan_course(course_data, minutes):
+    planed_performance = course_data / minutes
     pass

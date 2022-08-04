@@ -28,8 +28,8 @@ def get_file_extension(filename):
 
 
 def process_file_upload(file, file_type):
-    file_prefix, file_extenstion = get_file_extension(file.filename)
-    if file_extenstion in ALLOWED_EXTENSIONS:
+    file_prefix, file_extension = get_file_extension(file.filename)
+    if file_extension in ALLOWED_EXTENSIONS:
         filename = secure_filename(file.filename)
         if file_type == 'performance':
             file.save(PERFORMANCE_UPLOAD_FOLDER / filename)
@@ -37,7 +37,7 @@ def process_file_upload(file, file_type):
         elif file_type == 'course':
             file.save(COURSE_UPLOAD_FOLDER / filename)
             return f"http://localhost:5000/analyze/course?f={file_prefix}", 200
-    return f".{file_extenstion} files not supported. Please try again.", 400
+    return f".{file_extension} files not supported. Please try again.", 400
 
 
 @app.route('/', methods=['GET'])
