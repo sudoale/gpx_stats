@@ -7,6 +7,7 @@ COPY . ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN ls -la
+RUN ls -la input/course
+RUN pwd
 
 CMD exec gunicorn --bind :5000 --workers 1 --threads 8 --timeout 0 app:app
