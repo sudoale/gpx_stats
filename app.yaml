@@ -8,7 +8,7 @@ handlers:
 
 libraries:
 - name: flask
-  version: "2.2.0"
+  version: "0.12.0"
 - name: werkzeug
   version: "2.2.1"
 - name: gpxpy
