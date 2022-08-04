@@ -1,7 +1,9 @@
 from pathlib import Path
 from flask import (Flask,
                    render_template,
-                   request)
+                   request,
+                   redirect,
+                   url_for)
 
 from werkzeug.utils import secure_filename
 
@@ -33,10 +35,10 @@ def process_file_upload(file, file_type):
         filename = secure_filename(file.filename).lower()
         if file_type == 'performance':
             file.save(PERFORMANCE_UPLOAD_FOLDER / filename)
-            return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
+            return url_for('analyze_performance', f=file_prefix, t=60), 200
         elif file_type == 'course':
             file.save(COURSE_UPLOAD_FOLDER / filename)
-            return f"http://localhost:5000/analyze/course?f={file_prefix}", 200
+            return url_for('analyze_performance', f=file_prefix), 200
     return f".{file_extension} files not supported. Please try again.", 400
 
 
