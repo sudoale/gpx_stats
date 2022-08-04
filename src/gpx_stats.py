@@ -28,6 +28,7 @@ OUT_DIR.mkdir(exist_ok=True)
 
 
 def extract_points(file: Path):
+    print(file.absolute())
     with open(file.absolute(), 'r') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
