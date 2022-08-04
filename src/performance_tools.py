@@ -1,6 +1,3 @@
-import seaborn
-
-
 def calculate_gap(ascent, distance, duration):
     ratio = 1000 / distance
 
