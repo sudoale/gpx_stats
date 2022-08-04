@@ -30,7 +30,7 @@ def get_file_extension(filename):
 def process_file_upload(file, file_type):
     file_prefix, file_extension = get_file_extension(file.filename)
     if file_extension in ALLOWED_EXTENSIONS:
-        filename = secure_filename(file.filename)
+        filename = secure_filename(file.filename).lower()
         if file_type == 'performance':
             file.save(PERFORMANCE_UPLOAD_FOLDER / filename)
             return f"http://localhost:5000/analyze/performance?f={file_prefix}&t=60", 200
